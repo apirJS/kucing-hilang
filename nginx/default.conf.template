@@ -1,0 +1,57 @@
+# nginx.conf
+server {
+    listen 80;
+    server_name www.kucing-hilang.live;  # Change this to your domain name
+
+    location / {
+        proxy_pass http://frontend:3000;  # Proxy to the frontend Next.js app
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api {
+        proxy_pass http://backend:3001;  # Proxy to the backend Express app
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Certbot configuration for SSL
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;  # Directory for Certbot challenges
+    }
+
+    # Redirect HTTP to HTTPS
+    error_page 497 https://$host$request_uri;  # Redirect to HTTPS if HTTP is accessed
+}
+
+server {
+    listen 443 ssl;  # SSL configuration
+    server_name www.kucing-hilang.live;  # Change this to your domain name
+
+    ssl_certificate /etc/letsencrypt/live/www.kucing-hilang.live/fullchain.pem;  # SSL certificate
+    ssl_certificate_key /etc/letsencrypt/live/www.kucing-hilang.live/privkey.pem;  # SSL certificate key
+
+    location / {
+        proxy_pass http://frontend:3000;  # Proxy to the frontend Next.js app
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api {
+        proxy_pass http://backend:3001;  # Proxy to the backend Express app
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
