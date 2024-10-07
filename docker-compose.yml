@@ -66,6 +66,9 @@ services:
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
+    entrypoint: >
+      sh -c "certbot certonly --webroot --webroot-path=/var/www/certbot --email lancesapr@gmail.com --agree-tos --no-eff-email --force-renewal -d www.kucing-hilang.live"
+
 
 volumes:
   postgres_data:
