@@ -13,7 +13,7 @@ services:
     env_file: .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+
   redis:
     image: bitnami/redis
     environment:
@@ -29,12 +29,9 @@ services:
       dockerfile: Dockerfile
     container_name: nextjs-app
     ports:
-      - "3000:3000" # Optional: Only if you need to access it directly for debugging
+      - '3000:3000' # Optional: Only if you need to access it directly for debugging
     environment:
       - CONFIG_FILE=config.env
-    depends_on:
-      - postgres
-      - redis
 
   backend:
     build:
@@ -42,35 +39,37 @@ services:
       dockerfile: Dockerfile
     container_name: express-app
     ports:
-      - "3001:3001" # Optional: Only if you need to access it directly for debugging
+      - '3001:3001' # Optional: Only if you need to access it directly for debugging
     environment:
       - NODE_ENV=production
     env_file: .env
+    depends_on:
+      - postgres
+      - redis
 
   nginx:
-    build:
-      context: ./nginx  # Path to the directory containing your Dockerfile
-      dockerfile: Dockerfile  # Name of your Dockerfile
+    image: nginx:latest
     container_name: nginx
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/certbot
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - frontend
       - backend
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www/:/var/www/certbot/:ro
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:latest
     volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+    entrypoint: >
+      sh -c "certbot certonly --webroot --webroot-path=/var/www/certbot --email lancesapr@gmail.com --agree-tos --no-eff-email --force-renewal -d www.kucing-hilang.live"
+
 
 volumes:
   postgres_data:
   redis_data:
-  certbot-etc:
-  certbot-var:
