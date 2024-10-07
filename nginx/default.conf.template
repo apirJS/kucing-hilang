@@ -1,7 +1,7 @@
 # nginx.conf
 server {
     listen 80;
-    server_name www.kucing-hilang.live;  # Change this to your domain name
+    server_name kucing-hilang.live;  # Change this to your domain name
 
     location / {
         proxy_pass http://frontend:3000;  # Proxy to the frontend Next.js app
@@ -32,10 +32,10 @@ server {
 
 server {
     listen 443 ssl;  # SSL configuration
-    server_name www.kucing-hilang.live;  # Change this to your domain name
+    server_name kucing-hilang.live;  # Change this to your domain name
 
-    ssl_certificate /etc/letsencrypt/live/www.kucing-hilang.live/fullchain.pem;  # SSL certificate
-    ssl_certificate_key /etc/letsencrypt/live/www.kucing-hilang.live/privkey.pem;  # SSL certificate key
+    ssl_certificate /etc/letsencrypt/live/kucing-hilang.live/fullchain.pem;  # SSL certificate
+    ssl_certificate_key /etc/letsencrypt/live/kucing-hilang.live/privkey.pem;  # SSL certificate key
 
     location / {
         proxy_pass http://frontend:3000;  # Proxy to the frontend Next.js app
