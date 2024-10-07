@@ -22,6 +22,31 @@ services:
     volumes:
       - redis_data:/bitnami/redis/data
 
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    ports:
+      - "3000:3000"
+    environment:
+      - CONFIG_FILE=config.env
+    depends_on:
+      - postgres
+      - redis
+
+  backend:
+    build:
+      context: ./service
+      dockerfile: Dockerfile
+    container_name: express-app
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./service/.env
+
 volumes:
   postgres_data:
   redis_data:

@@ -24,7 +24,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.BUN_ENV === 'production',
       maxAge: 1000 * 60 * 60 * 24, // 10 minutes
     },
   })
@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-const PORT = Number(getEnv('port')) || 3000;
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
