@@ -1,75 +1,82 @@
-version: '3.8'
-
+version: '3'
 services:
-  postgres:
-    image: postgres
-    container_name: postgres_container
-    environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - '5432:5432'
-    env_file: .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: bitnami/redis
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/bitnami/redis/data
-
-  frontend:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    container_name: nextjs-app
-    ports:
-      - '3000:3000' # Optional: Only if you need to access it directly for debugging
-    environment:
-      - CONFIG_FILE=config.env
-
-  backend:
-    build:
-      context: ./service
-      dockerfile: Dockerfile
-    container_name: express-app
-    ports:
-      - '3001:3001' # Optional: Only if you need to access it directly for debugging
-    environment:
-      - NODE_ENV=production
-    env_file: .env
-    depends_on:
-      - postgres
-      - redis
-
   nginx:
     image: nginx:latest
     container_name: nginx
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - frontend
-      - backend
-    restart: always
-    volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www/:/var/www/certbot/:ro
+      - backend1
+      - backend2
 
+  redis:
+    image: bitnami/redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/bitnami/redis/data
+  
+  postgres:
+    image: bitnami/postgresql:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/data:/bitnami/postgresql/data
+    env_file:
+      - .env
+    
+  frontend:
+    container_name: nextjs
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+  
+  backend1:
+    container_name: express-1
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+  
+  backend2:
+    container_name: express-2
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+  
   certbot:
-    image: certbot/certbot:latest
+    image: certbot/certbot
+    container_name: certbot
     volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    entrypoint: >
-      sh -c "certbot certonly --webroot --webroot-path=/var/www/certbot --email lancesapr@gmail.com --agree-tos --no-eff-email --force-renewal -d www.kucing-hilang.live"
-
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   postgres_data:
   redis_data:
+  nginx_data:
+  certbot_data:
