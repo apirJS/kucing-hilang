@@ -4,6 +4,7 @@ import session from 'express-session';
 import { createClient } from 'redis';
 import { getEnv } from './lib/utils';
 import { PrismaClient } from '@prisma/client';
+import cors from 'cors';
 
 const app = express();
 const redisUrl = getEnv('REDIS_URL') || 'redis://localhost:6379';
@@ -16,6 +17,7 @@ redisClient.on('error', (err) => {
   console.error('Redis error: ', err);
 });
 
+app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 app.use(
   session({
@@ -30,12 +32,15 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hello World!');
 });
 
-// Start server
-const PORT = process.env.PORT
+app.use((req, res) => {
+  res.status(404).send('Not found, bang');
+});
+
+const PORT = process.env.BACKEND_PORT
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

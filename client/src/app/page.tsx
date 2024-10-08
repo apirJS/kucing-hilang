@@ -1,9 +1,8 @@
 
 import Hero from '@/components/Hero';
 import NearestCats from '@/components/NearestCats';
-import React from 'react';
 
-export default function Home() {
+export default async function Home() {
   return (
     <>
       <main>
