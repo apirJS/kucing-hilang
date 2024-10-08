@@ -16,16 +16,13 @@ RUN bun install --frozen-lockfile
 FROM deps AS builder
 WORKDIR /app
 COPY . .
-
 RUN bun run build
 
 # Production image, copy all the files and run next
 FROM node:18-slim AS runner
 WORKDIR /app
 
-ARG CONFIG_FILE
-COPY $CONFIG_FILE /app/.env
-ENV NODE_ENV production
+ENV BUN_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
