@@ -53,7 +53,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./certbot/conf:/etc/letsencrypt
+      - ./certs:/etc/letsencrypt/certs  # Mount directory certs ke /etc/letsencrypt/certs
       - ./certbot/www:/var/www/certbot
     depends_on:
       - frontend
