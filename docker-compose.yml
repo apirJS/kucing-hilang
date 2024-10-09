@@ -53,19 +53,23 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/letsencrypt/certs  # Mount directory certs ke /etc/letsencrypt/certs
-      - ./certbot/www:/var/www/certbot
+      - ./etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - frontend
       - backend
 
   certbot:
-    image: certbot/certbot
     container_name: certbot
+    image: certbot/certbot:latest
+    depends_on:
+      - nginx
+    command: >-
+             certonly --reinstall --webroot --webroot-path=/var/www/certbot
+             --email lancesapr@gmail.com --agree-tos --no-eff-email
+             -d kucing-hilang.live -d www.kucing-hilang.live
     volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - ./etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/data:/var/www/certbot
 
 volumes:
   postgres_data:
