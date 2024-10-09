@@ -29,6 +29,8 @@ sudo apt-get install -y certbot
 # Run docker-compose in the background
 sudo docker compose -f kucing-hilang/docker-compose-http.yml up -d
 
+mkdir -p kucing-hilang/certs
+
 # Obtain SSL certificate using Certbot
 sudo certbot certonly --webroot -w kucing-hilang/certbot/www --agree-tos --no-eff-email --email lancesapr@gmail.com -d www.kucing-hilang.live
 
