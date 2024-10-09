@@ -27,24 +27,21 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 sudo apt-get install -y certbot
 
 # Run docker-compose in the background
-sudo docker compose -f kucing-hilang/docker-compose-http.yml up -d
+sudo docker compose -f /home/apriliyantoecha1/kucing-hilang/docker-compose-http.yml up -d
 
-mkdir -p kucing-hilang/certs
+mkdir -p /home/apriliyantoecha1/kucing-hilang/certs
 
 # Obtain SSL certificate using Certbot
-sudo certbot certonly --webroot -w kucing-hilang/certbot/www --agree-tos --no-eff-email --email lancesapr@gmail.com -d www.kucing-hilang.live
+sudo certbot certonly --webroot -w /home/apriliyantoecha1/kucing-hilang/certbot/www --agree-tos --no-eff-email --email apriliyantoecha1@gmail.com -d www.kucing-hilang.live
 
-sudo cp /etc/letsencrypt/live/www.kucing-hilang.live/fullchain.pem kucing-hilang/certs/fullchain.pem
-sudo cp /etc/letsencrypt/live/www.kucing-hilang.live/privkey.pem kucing-hilang/certs/privkey.pem
+sudo cp /etc/letsencrypt/live/www.kucing-hilang.live/fullchain.pem /home/apriliyantoecha1/kucing-hilang/certs/fullchain.pem
+sudo cp /etc/letsencrypt/live/www.kucing-hilang.live/privkey.pem /home/apriliyantoecha1/kucing-hilang/certs/privkey.pem
 
 # Stop the docker-compose services
-sudo docker compose -f kucing-hilang/docker-compose-http.yml down
+sudo docker compose -f /home/apriliyantoecha1/kucing-hilang/docker-compose-http.yml down
 
 # Start the docker-compose services with SSL
-sudo docker compose -f kucing-hilang/docker-compose.yml up -d
+sudo docker compose -f /home/apriliyantoecha1/kucing-hilang/docker-compose.yml up -d
 
 # Set up a cron job for auto-renewal of the SSL certificate
-(crontab -l ; echo "0 0,12 * * * /usr/bin/certbot renew --quiet --renew-hook 'sudo docker compose -f kucingku-hilang/docker-compose.yml restart'") | crontab -
-
-
-
+(crontab -l ; echo "0 0,12 * * * /usr/bin/certbot renew --quiet --renew-hook 'sudo docker compose -f /home/apriliyantoecha1/kucing-hilang/docker-compose.yml restart'") | crontab -
