@@ -1,12 +1,85 @@
 version: '3.8'
 
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres:
+    name: db
+  redis:
+    name: cache
+
 services:
+  postgres:
+    image: postgres
+    container_name: postgres_container
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis
+    container_name: cache
+    ports:
+      - '6379:6379'
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+    volumes:
+      - redis:/var/lib/redis/data
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    ports:
+      - '3000:3000'
+    networks:
+      - backend
+    restart: always
+
+  backend:
+    build:
+      context: ./service
+      dockerfile: Dockerfile
+    container_name: express-app
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+    networks:
+      - backend
+    restart: always
+
   nginx:
     image: nginx:alpine
     container_name: nginx
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx-http.conf:/etc/nginx/nginx.conf
       - ./certs:/etc/ssl/certs
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    networks:
+      - backend

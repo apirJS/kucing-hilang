@@ -7,6 +7,8 @@ networks:
 volumes:
   postgres:
     name: db
+  redis:
+    name: cache
 
 services:
   postgres:
@@ -29,9 +31,9 @@ services:
 
   redis:
     image: redis
-    container_name: session
-    expose:
-      - 6379
+    container_name: cache
+    ports:
+      - '6379:6379'
     networks:
       - backend
     healthcheck:
@@ -40,6 +42,8 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    volumes:
+      - redis:/var/lib/redis/data
 
   frontend:
     build:
@@ -61,23 +65,20 @@ services:
       - '5000:5000'
     env_file:
       - .env
-    depends_on:
-      redis:
-        condition: service_started    # Redis doesn't need to be healthy before backend starts
     networks:
       - backend
     restart: always
 
-  # nginx:
-  #   image: nginx:alpine
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./nginx/nginx-ssl.conf:/etc/nginx/nginx.conf
-  #     - ./certs:/etc/ssl/certs
-  #   depends_on:
-  #     - frontend
-  #     - backend
-  #   restart: always
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx-https.conf:/etc/nginx/nginx.conf
+      - ./certs:/etc/ssl/certs
+    depends_on:
+      - frontend
+      - backend
+    restart: always

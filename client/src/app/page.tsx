@@ -1,4 +1,3 @@
-
 import Hero from '@/components/Hero';
 import NearestCats from '@/components/NearestCats';
 

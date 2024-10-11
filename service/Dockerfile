@@ -14,7 +14,6 @@ RUN bun build ./src/index.ts --outdir ./build --minify --target bun
 
 FROM imbios/bun-node:18-slim as production
 
-ENV BUN_ENV=production
 
 WORKDIR /app
 
@@ -27,7 +26,7 @@ RUN bun install --production
 
 COPY --from=development /app/build . 
 COPY --from=development /app/src/database ./src/database 
-COPY --from=development /app/src/lib ./src/lib 
+COPY --from=development /app/src/lib/utils.ts ./src/lib/utils.ts
 
 RUN chmod +x wait-for-it.sh
 
