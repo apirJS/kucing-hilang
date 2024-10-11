@@ -1,26 +1,45 @@
 version: '3.8'
 
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres:
+    name: db
+
 services:
   postgres:
     image: postgres
     container_name: postgres_container
-    environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
     ports:
       - '5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-  
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+
   redis:
-    image: bitnami/redis
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/bitnami/redis/data
+    image: redis
+    container_name: session
+    expose:
+      - 6379
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
 
   frontend:
     build:
@@ -28,12 +47,10 @@ services:
       dockerfile: Dockerfile
     container_name: nextjs-app
     ports:
-      - "3000:3000"
-    environment:
-      - CONFIG_FILE=config.env
-    depends_on:
-      - postgres
-      - redis
+      - '3000:3000'
+    networks:
+      - backend
+    restart: always
 
   backend:
     build:
@@ -41,23 +58,26 @@ services:
       dockerfile: Dockerfile
     container_name: express-app
     ports:
-      - "5000:5000"
+      - '5000:5000'
     env_file:
       - .env
-   
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx-ssl.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/ssl/certs
     depends_on:
-      - frontend
+      redis:
+        condition: service_started    # Redis doesn't need to be healthy before backend starts
+    networks:
       - backend
+    restart: always
 
-volumes:
-  postgres_data:
-  redis_data:
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx-ssl.conf:/etc/nginx/nginx.conf
+  #     - ./certs:/etc/ssl/certs
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   restart: always

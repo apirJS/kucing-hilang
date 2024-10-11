@@ -1,10 +1,10 @@
-FROM oven/bun:1.1.8-alpine as development
+FROM imbios/bun-node:18-slim as development
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json .
-
 COPY bun.lockb .
+COPY drizzle.config.ts .
 
 RUN bun install
 
@@ -12,19 +12,23 @@ COPY . .
 
 RUN bun build ./src/index.ts --outdir ./build --minify --target bun
 
-FROM oven/bun:1.1.8-alpine as production
+FROM imbios/bun-node:18-slim as production
 
-ARG BUN_ENV=production
-ENV BUN_ENV=${BUN_ENV}
+ENV BUN_ENV=production
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json .
-
 COPY bun.lockb .
+COPY wait-for-it.sh .
+COPY drizzle.config.ts .
 
 RUN bun install --production
 
-COPY --from=development /usr/src/app/build ./build
+COPY --from=development /app/build . 
+COPY --from=development /app/src/database ./src/database 
+COPY --from=development /app/src/lib ./src/lib 
 
-CMD [ "bun" , "run", "build/index.js" ]
+RUN chmod +x wait-for-it.sh
+
+CMD [ "./wait-for-it.sh", "postgres:5432", "--", "sh", "-c", "bun run db:apply && bun run db:seed && bun start" ]
