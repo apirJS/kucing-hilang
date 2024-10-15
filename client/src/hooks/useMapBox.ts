@@ -2,8 +2,9 @@ import { ElementRef, useEffect, useRef, useState } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 import { Suggestion, SearchResults } from '@/lib/types';
 
-const DEFAULT_MAP_ZOOM = 15;
-mapboxgl.accessToken = 'pk.eyJ1IjoiYXBpciIsImEiOiJjbTF1enN2cXIwNnFwMmpweGJtM3l3MzBkIn0.esbh1Il-Sei2aAqXYWc1nQ';
+const DEFAULT_MAP_ZOOM = 12;
+mapboxgl.accessToken =
+  'pk.eyJ1IjoiYXBpciIsImEiOiJjbTF1enN2cXIwNnFwMmpweGJtM3l3MzBkIn0.esbh1Il-Sei2aAqXYWc1nQ';
 
 export function useMapBox() {
   const mapContainerRef = useRef<ElementRef<'div'>>(null);
@@ -76,6 +77,9 @@ export function useMapBox() {
       )}.json?access_token=${mapboxgl.accessToken}`
     );
     const data: SearchResults = await response.json();
+    data.features.forEach((suggestion) => {
+      suggestion.selected = false;
+    });
     setSuggestions(data.features);
   }
 
@@ -109,14 +113,14 @@ export function useMapBox() {
       }
     );
   }
-  
+
   function handleSuggestionClick(suggestion: Suggestion) {
     if (mapInstance) {
-      mapInstance.setCenter(suggestion.center)
-      mapInstance.setZoom(DEFAULT_MAP_ZOOM)
+      mapInstance.setCenter(suggestion.center);
+      mapInstance.setZoom(DEFAULT_MAP_ZOOM);
     }
-    setSearchQuery("")
-    setSuggestions([])
+    setSearchQuery('');
+    setSuggestions([]);
   }
 
   return {
@@ -130,6 +134,7 @@ export function useMapBox() {
     handleSearch,
     askLocationPermission,
     fetchSuggestions,
-    handleSuggestionClick
+    handleSuggestionClick,
+    setSuggestions,
   };
 }

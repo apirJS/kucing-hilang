@@ -3,11 +3,9 @@ import NearestCats from '@/components/NearestCats';
 
 export default function Home() {
   return (
-    <>
-      <main>
-        <Hero />
-        <NearestCats />
-      </main>
-    </>
+    <main>
+      <Hero />
+      <NearestCats />
+    </main>
   );
 }

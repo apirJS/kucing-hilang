@@ -23,8 +23,28 @@ export interface Suggestion {
     short_code: string;
     text: string;
   }[];
+  selected: boolean;
 }
 
 export interface SearchResults {
   features: Suggestion[];
 }
+
+type BaseLocation = {
+  id: string;
+  name: string;
+};
+
+export type Province = BaseLocation;
+
+export type Regency = BaseLocation & {
+  province_id: string;
+};
+
+export type District = BaseLocation & {
+  regency_id: string;
+};
+
+export type Village = BaseLocation & {
+  district_id: string;
+};

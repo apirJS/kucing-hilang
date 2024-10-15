@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: "#FFF8E8";
+  --secondary: "#F7EED3";
+  --accent: "#674636"
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,7 +42,7 @@ body {
 
 main {
   position: relative;
-  margin-top: 8vh;
+  margin-top: 10vh;
 }
 
 section {
@@ -48,5 +53,11 @@ section {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  .select-region {
+    @apply bg-accent text-primary w-60 p-2 rounded-md uppercase;
   }
 }

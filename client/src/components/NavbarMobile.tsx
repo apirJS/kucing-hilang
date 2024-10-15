@@ -18,7 +18,7 @@ export default function NavbarMobile({ state }: Props) {
       className={` ${
         state.isMobileMenuVisible
           ? '-translate-y-0'
-          : '-translate-y-[calc(100%+8vh)]'
+          : '-translate-y-[calc(100%+10vh)]'
       } text-lg flex justify-center absolute min-h-10 py-4 top-full inset-x-0 bg-accent transition`}
     >
       <ul className='flex flex-col justify-center items-center gap-x-10 gap-y-4'>

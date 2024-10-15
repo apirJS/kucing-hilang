@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { FaRegHandPointDown } from 'react-icons/fa6';
 
 export default function Hero() {
@@ -23,7 +24,13 @@ export default function Hero() {
       </figure>
       <aside className=' relative flex justify-center items-center p-4  font-mono  flex-col gap-y-10'>
         <blockquote className=' flex justify-center items-center flex-col gap-y-2'>
-          <Image width={150} height={150} src='/images/black-cat.gif' alt='happy happy happy' className='hidden md:block'/>
+          <Image
+            width={150}
+            height={150}
+            src='/images/black-cat.gif'
+            alt='happy happy happy'
+            className='hidden md:block'
+          />
           <p className='text-sm sm:text-lg'>
             Di sini, kamu bisa membuat postingan jika kamu
             <strong> kehilangan</strong> kucing kesayanganmu, atau jika kamu
@@ -32,13 +39,17 @@ export default function Hero() {
           <FaRegHandPointDown />
         </blockquote>
         <div className='flex gap-x-4 text-xs sm:text-base'>
-          <button className='select-none bg-secondary hover:scale-105 transition font-bold border-[1px]  border-accent p-2 min-w-24 min-h-15 rounded-md z-10'>
-            Aku Menemukan Kucing 😸
-          </button>
+          <Link href='kucing-ditemukan'>
+            <button className='[box-shadow:2px_2px_0_0_black] select-none bg-secondary hover:scale-105 transition font-bold border-[1px]  border-accent p-2 min-w-24 min-h-15 rounded-md z-10'>
+              Aku Menemukan Kucing 😸
+            </button>
+          </Link>
           <div className='w-[2px] bg-black rounded-md'></div>
-          <button className='select-none bg-secondary hover:scale-105 transition font-bold border-[1px]  border-accent p-2 min-w-24 min-h-15 rounded-md z-10'>
-            Aku Kehilangan Kucing 😿
-          </button>
+          <Link href='kucing-hilang'>
+            <button className='[box-shadow:2px_2px_0_0_black] select-none bg-secondary hover:scale-105 transition font-bold border-[1px]  border-accent p-2 min-w-24 min-h-15 rounded-md z-10'>
+              Aku Kehilangan Kucing 😿
+            </button>
+          </Link>
         </div>
         <p>Semoga kucingmu cepet ketemu 😘</p>
       </aside>

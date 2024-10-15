@@ -15,7 +15,7 @@ export default function SearchSuggestions({
         <li
           key={suggestion.id}
           onClick={() => handleSuggestionClick(suggestion)}
-          className='cursor-pointer hover:bg-gray-200 p-2'
+          className={`cursor-pointer hover:bg-gray-200 p-2 ${suggestion.selected ? 'bg-gray-200' : ''}`}
         >
           {suggestion.place_name}
         </li>

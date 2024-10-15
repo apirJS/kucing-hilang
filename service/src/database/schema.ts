@@ -1,11 +1,16 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, varchar, timestamp, text } from 'drizzle-orm/pg-core';
+import {
+  integer,
+  pgTable,
+  varchar,
+  timestamp,
+  text,
+} from 'drizzle-orm/pg-core';
 
 export const usersTable = pgTable('users', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
-  password: varchar({ length: 255 }),
   whatsappNumber: varchar('whatsapp_number', { length: 20 }).unique(),
   updatedAt: timestamp('created_at'),
   createdAt: timestamp('updated_at').defaultNow().notNull(),
@@ -15,7 +20,7 @@ export const lostCatPostsTable = pgTable('lost_cat_posts', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
   race: varchar({ length: 255 }),
-  lastSeen: varchar('last_seen', { length: 255 }),
+  lastLocation: varchar('last_seen', { length: 255 }),
   ownerNote: text('owner_note'),
   updatedAt: timestamp('created_at'),
   createdAt: timestamp('updated_at').defaultNow().notNull(),

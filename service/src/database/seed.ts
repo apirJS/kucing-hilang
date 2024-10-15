@@ -7,58 +7,67 @@ import {
   catImagesTable,
 } from './schema';
 
-async function seed() {
-  for (let i = 0; i < 10; i++) {
+async function seed(
+  nUsers = 50,
+  nLostCatPosts = 20,
+  nFoundCatPosts = 20,
+  nCatImages = 10
+) {
+  for (let i = 0; i < nUsers; i++) {
     const user: typeof usersTable.$inferInsert = {
-      name: 'test' + Math.random().toString(36).substring(2, 10),
-      email: Math.random().toString(36).substring(2, 10) + '@gmail.com',
-      password: 'test1',
+      name: `user${i}`,
+      email: `email${i}`,
+      whatsappNumber: `whatsappNumber${i}`,
     };
 
-    await db.insert(usersTable).values(user);
+    const newUser = await db.insert(usersTable).values(user).returning();
 
-    const userId = (
-      await db
-        .select({ id: usersTable.id })
-        .from(usersTable)
-        .where(sql`${usersTable.email} = ${user.email}`)
-    ).at(0)?.id!;
+    for (let j = 0; j < nLostCatPosts; j++) {
+      const lostCatPost: typeof lostCatPostsTable.$inferInsert = {
+        userId: newUser[i].id,
+        name: `name${j}`,
+        ownerNote: `owenr note${j}`,
+        lastLocation: `last seen${j}`,
+        race: `race${j}`,
+      };
 
-    const lostCatPost: typeof lostCatPostsTable.$inferInsert = {
-      name: 'kucing' + Math.floor(Math.random() * 100),
-      userId: userId,
-      lastSeen: 'location' + Math.floor(Math.random() * 100),
-      race: 'race' + Math.floor(Math.random() * 100),
-      ownerNote:
-        'dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    };
+      const newPosts = await db
+        .insert(lostCatPostsTable)
+        .values(lostCatPost)
+        .returning();
 
-    await db.insert(lostCatPostsTable).values(lostCatPost);
+      for (let k = 0; k < nCatImages; k++) {
+        const catImage: typeof catImagesTable.$inferInsert = {
+          lostCatPostId: newPosts[j].id,
+          url: `url${k}`,
+        };
 
-    const foundCatPost: typeof foundCatPostsTable.$inferInsert = {
-      userId: userId,
-      location: 'location' + Math.floor(Math.random() * 100),
-      race: 'race' + Math.floor(Math.random() * 100),
-      finderNote:
-        'dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    };
+        await db.insert(catImagesTable).values(catImage).returning();
+      }
+    }
 
-    await db.insert(foundCatPostsTable).values(foundCatPost);
+    for (let j = 0; j < nFoundCatPosts; j++) {
+      const foundCatPost: typeof foundCatPostsTable.$inferInsert = {
+        userId: newUser[i].id,
+        finderNote: `finder note${j}`,
+        location: `location${j}`,
+        race: `race${j}`,
+      };
 
-    const catImage: typeof catImagesTable.$inferInsert = {
-      lostCatPostId: i + 1, // Assuming sequential IDs
-      url: 'https://www.example.com/image' + Math.floor(Math.random() * 100),
-    };
+      const newPosts = await db
+        .insert(foundCatPostsTable)
+        .values(foundCatPost)
+        .returning();
 
-    await db.insert(catImagesTable).values(catImage);
+      for (let k = 0; k < nCatImages; k++) {
+        const catImage: typeof catImagesTable.$inferInsert = {
+          foundCatPostId: newPosts[j].id,
+          url: `url${k}`,
+        };
 
-    console.log(
-      'seeded',
-      user.name,
-      lostCatPost.userId,
-      foundCatPost.userId,
-      catImage.url
-    );
+        await db.insert(catImagesTable).values(catImage).returning();
+      }
+    }
   }
 }
 
