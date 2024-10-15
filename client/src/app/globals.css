@@ -50,6 +50,10 @@ section {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+button {
+  user-select: none;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

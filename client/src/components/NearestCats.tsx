@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMapBox } from '@/hooks/useMapBox';
 import SearchSuggestions from './SearchSuggestions';
 import { FaPaw } from 'react-icons/fa';
-import { ElementRef, useEffect, useRef, useState } from 'react';
+import { ElementRef, useEffect, useRef } from 'react';
 
 export default function NearestCats() {
   const {
@@ -17,9 +17,9 @@ export default function NearestCats() {
     mapContainerRef,
     handleSuggestionClick,
     setSuggestions,
+    currentSuggestionIndex,
+    setCurrentSuggestionIndex,
   } = useMapBox();
-  const [currentSuggestionIndex, setCurrentSuggestionIndex] =
-    useState<number>(-1);
   const inputRef = useRef<ElementRef<'input'>>(null);
 
   useEffect(() => {

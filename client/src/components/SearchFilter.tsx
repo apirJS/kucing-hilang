@@ -179,7 +179,7 @@ export default function SearchFilter({
     <aside
       className={`${
         isSearchFilterVisible ? 'left-0' : '-left-full'
-      } transition-all px-10 fixed  flex flex-col justify-start items-center py-20 gap-y-5 bg-secondary h-[110vh] z-10 top-[-10vh] pt-[calc(15vh+80px)]`}
+      } transition-all px-10 fixed  flex flex-col justify-start items-center py-20 gap-y-5 bg-secondary h-[110vh] z-10 top-[-10vh] pt-[calc(25vh)]`}
     >
       <h1 className='font-bold font-mono text-xl'>Filter Pencarian</h1>
       <form

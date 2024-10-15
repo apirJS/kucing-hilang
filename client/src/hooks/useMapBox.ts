@@ -14,6 +14,8 @@ export function useMapBox() {
   const [mapInstance, setMapInstance] = useState<Map | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [currentSuggestionIndex, setCurrentSuggestionIndex] =
+  useState<number>(-1);
 
   const initialLat = useRef(lat);
   const initialLng = useRef(lng);
@@ -62,6 +64,8 @@ export function useMapBox() {
       setLng(newLng);
       mapInstance.setCenter([newLng, newLat]);
       mapInstance.setZoom(DEFAULT_MAP_ZOOM);
+
+      setCurrentSuggestionIndex(-1);
     }
   }
 
@@ -121,6 +125,8 @@ export function useMapBox() {
     }
     setSearchQuery('');
     setSuggestions([]);
+
+    setCurrentSuggestionIndex(-1);
   }
 
   return {
@@ -136,5 +142,7 @@ export function useMapBox() {
     fetchSuggestions,
     handleSuggestionClick,
     setSuggestions,
+    currentSuggestionIndex,
+    setCurrentSuggestionIndex
   };
 }
