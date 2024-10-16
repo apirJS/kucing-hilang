@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Navbar from './Navbar';
-import AuthButtons from './AuthButtons';
+import AuthButtons from './home-page/AuthButtons';
 import { MdMenu } from 'react-icons/md';
 import Link from 'next/link';
 import NavbarMobile from './NavbarMobile';
